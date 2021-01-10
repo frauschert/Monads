@@ -2,7 +2,7 @@
 
 namespace Monads
 {
-    public struct Either<L, R>
+    public class Either<L, R>
     {
         private readonly L left;
         private readonly R right;
