@@ -11,9 +11,9 @@ namespace Monads.Extensions
         public static Try<T> Catch<T, TException>(this Try<T> source, Func<TException, Try<T>> selector, Func<TException, bool> predicate = null) where TException : Exception
             => source
                 .Result
-                .Match(_ => 
-                    new Try<T>(() => source.Result), 
-                    left => left is TException exc && (predicate == null || predicate(exc)) ? selector(exc) : new Try<T>(() => source.Result));
+                .Match(
+                    _ => source, 
+                    left => left is TException exc && (predicate == null || predicate(exc)) ? selector(exc) : source);
 
         public static TResult Finally<T, TResult>(this Try<T> source, Func<Try<T>, TResult> selector)
             => selector(source);
@@ -21,6 +21,6 @@ namespace Monads.Extensions
             => action(source);
 
         public static Try<T> Throw<T>(this Exception exception)
-            => new Try<T>(() => Either<Exception, T>.Left(exception));
+            => new Try<T>(() => throw exception);
     }
 }
