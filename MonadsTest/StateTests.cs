@@ -1,8 +1,4 @@
 ﻿using Monads;
-using Monads.Extensions;
-using Monads.Linq;
-using NUnit.Framework;
-using System;
 
 namespace MonadsTest;
 
@@ -18,7 +14,7 @@ public class Tests
     }
 
     [Test]
-    public void Test2()
+    public void Workflow()
     {
         string initialState = nameof(initialState);
         string newState = nameof(newState);
@@ -42,5 +38,32 @@ public class Tests
         Assert.That(result.Value[1], Is.EqualTo(newState)); // Check the second element of the result array.
         Assert.That(result.Value[2], Is.EqualTo(resetState)); // Check the third element of the result array.
         Assert.That(result.State, Is.EqualTo(resetState)); // Check the final state.
+    }
+
+    [Test]
+    public void Test2()
+    {
+        IEnumerable<int> initialStack = Enumerable.Repeat(0, 5);
+        State<IEnumerable<int>, IEnumerable<int>> query =
+            from value1 in State.Pop<int>() // State<IEnumerable<int>, int>.
+            from unit1 in State.Push(1) // State<IEnumerable<int>, Unit>.
+            from unit2 in State.Push(2) // State<IEnumerable<int>, Unit>.
+            from stack in State.GetState<IEnumerable<int>>() // State<IEnumerable<int>, IEnumerable<int>>.
+            select stack; // Define query.
+        (IEnumerable<int> Value, IEnumerable<int> State) result = query(initialStack); // Execute query with initial state.
+        Assert.That(result.Value.Count(), Is.EqualTo(6)); // Check the length of the result array.
+        Assert.That(result.Value.ElementAt(0), Is.EqualTo(0)); // Check the first element of the result array.
+        Assert.That(result.Value.ElementAt(1), Is.EqualTo(0)); // Check the second element of the result array.
+        Assert.That(result.Value.ElementAt(2), Is.EqualTo(0)); // Check the third element of the result array.
+        Assert.That(result.Value.ElementAt(3), Is.EqualTo(0)); // Check the fourth element of the result array.
+        Assert.That(result.Value.ElementAt(4), Is.EqualTo(1)); // Check the fifth element of the result array.
+        Assert.That(result.Value.ElementAt(5), Is.EqualTo(2)); // Check the sixth element of the result array.
+        Assert.That(result.State.Count(), Is.EqualTo(6)); // Check the length of the result array.
+        Assert.That(result.State.ElementAt(0), Is.EqualTo(0)); // Check the first element of the result array.
+        Assert.That(result.State.ElementAt(1), Is.EqualTo(0)); // Check the second element of the result array.
+        Assert.That(result.State.ElementAt(2), Is.EqualTo(0)); // Check the third element of the result array.
+        Assert.That(result.State.ElementAt(3), Is.EqualTo(0)); // Check the fourth element of the result array.
+        Assert.That(result.State.ElementAt(4), Is.EqualTo(1)); // Check the fifth element of the result array.
+        Assert.That(result.State.ElementAt(5), Is.EqualTo(2)); // Check the sixth element of the result array.
     }
 }
